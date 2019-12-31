@@ -1,0 +1,16 @@
+T,373
+D0,7.5e-8
+E,1.609e-19
+Ea_ratio,0.84
+kB,1.3806e-23
+B0,1e11
+Omega,1.182e-29
+cu_res,3e-8
+hCu,9e-8
+Ta_res,1.76e-07
+hTa,2e-8
+Z,10
+nx,20
+wire_length,1
+t_total,1e-3
+tstep,1e-4
