@@ -27,13 +27,13 @@ def get_constant(constant_file):
 		kappa = (Da * B0 * Omega) / (kB*T)
 		nx = float(EM_constants[12].split(',')[-1]) # the number of pieces of fdm
 		wire_length = float(EM_constants[13].split(',')[-1])
-		t_total = float(EM_constants[14].split(',')[-1])# normalized total time
-		tstep = float(EM_constants[15].split(',')[-1]) # normalized tstep
-		tstamp = [] # every time step point
-		for i in range(int(t_total/tstep)):
-			tstamp.append(i*tstep)
+		#t_total = float(EM_constants[14].split(',')[-1])# normalized total time
+		#tstep = float(EM_constants[15].split(',')[-1]) # normalized tstep
+		#tstamp = [] # every time step point
+		t_total = float(EM_constants[14].split(',')[-1]) # total time for a big step
+
 		
-	return T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa,nx,wire_length, t_total, tstep,tstamp   
+	return T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa,nx,wire_length, t_total  
 def run_emcmd(input_spice):
 	cmd = "./em_cmd " + input_spice
 	#os.system(cmd)	
@@ -147,38 +147,18 @@ def gettree_info(tree_info, all_branch_width, all_branch_curden, all_branch_leng
 #		for j in range(FEM_run):
 #			if void[i] == 0:
 #				G,C,B = matrix_formation(nx,wires[i], J_list_norm[i])	
-def matrix_formation(nx,wires0, J_list_norm0):
-	wires = wires0.copy()
-	J_list_norm = np.asarray(J_list_norm0)
-	#wires[0] holds the name of a wire
-	#wires[1] holds the name of the net the wire is associated with
-	#wires[2] holds the x value of starting nodes
-	#wires[3] holds the y value of starting nodes
-	#wires[4] holds the names of the net the wires are assocaited with
-	#wires[5] holds the x valye of destination nodes	
-	#wires[6] holds the y value of destination nodes
-	#wires[7] Resistance of wires
-	n_wires = len(wires[0])
-	w_lengs = np.zeros(n_wires,2)
-	for n in range(n_wires):
-		xL = abs(wires[5][n] - wires[2][n])
-		if xL > 0:
-			w_lengs[n][0] = xL
-			w_lengs[n][1] = 1
-		else:
-			yL = wires[6][n] - wires[3][n]
-			if yL >0:
-				w_lengs[n][0] = yL
-				w_lengs[n][1] = 2
-			
-	ys = wires[6]
-	yn = ys - min(ys)
+def matrix_formation_nuc(J_list_norm0, one_tree,nx):
+	
+	J_list_norm = np.reshape(np.asarray(J_list_norm0),(len(J_list_norm0),1))
+	
+	n_wires = one_tree.branch_num
+	
+	w_lengs = np.asarray(one_tree.branch_length)
 	num_Junctions = n_wires - 1
-	nx = nx0
-	nx_total = (nx * n_wires) - num_Junctions
+	nx_total = int((nx * n_wires) - num_Junctions)
 	
 	G = np.zeros([nx_total,nx_total])
-	B = np.zeros([nx_tptal,n_wires])
+	B = np.zeros([nx_total,n_wires])
 	for i in range(1,(nx_total - 1)):
 		G[i,i-1] = G[i,i-1] + 1
 		G[i,i] = G[i,i] - 2
@@ -187,39 +167,40 @@ def matrix_formation(nx,wires0, J_list_norm0):
 	G[0,1] = G[0,1] + 1
 	G[-1,-1] = G[-1,-1] - 1
 	G[-1,-2] = G[-1,-2] + 1
-	index = 1
-	t = np.zeros[1,n_wires]
+	index = 0
+	t = np.zeros([1,n_wires])
 	for i in range(n_wires):
 		B[index,i] = 1
-		B[index + nx - 1, i] = -1
-		index = index + nx - 1;
+		B[int(index + nx - 1), i] = -1
+		index = int(index + nx - 1)
 	C = np.ones([nx_total])
 	dx = 1/(nx_total - 1)
-		
+	tmp =np.divide(J_list_norm,dx)
+	B = np.dot(B,tmp)
+	G = -G
+	G = np.divide(G,(dx*dx))
 	return G, C, B
 	
-def onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total, tstep,tstamp,tstamp_flag,stop_flag, cdnum, cdlist,init_flag, iterIdx, input_spice):
+def onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice):
 	run_emcmd(input_spice)
 	tree_info = "tree_info.txt"
 	tree_width = "tree_width.txt"
 	tree_curden = "tree_curden.txt"
-	if init_flag == 1:
-		tree_leng = "tree_leng.txt"
-	else:
-		tree_leng = "tree_leng1.txt"
+	tree_leng = "tree_leng.txt"
+	stress_file = 'u_stress.txt'
+	Void_file = 'Void.txt'
+	Lvoid_file = 'Lvoid.txt'	
 	tree_list = gettree(tree_info, tree_width, tree_curden, tree_leng) # tree_list is a list of tree structure.
 	tree_stress = []
-	if os.path.isfile('u_stress.txt'):
+	if os.path.isfile(stress_file ):
 		print ("have initial stress")
-		u_stress = "u_stress.txt"	
+		u_stress = stress_file 	
 		tree_stress = get_stress_from_file(u_stress)
 			
 	else:
 		tree_stress = getinitialstreee(tree_list, nx)
-	print(len(tree_stress))
-	if os.path.isfile('Void.txt'):
-		print("t")
-		Void_position, Void_length = getinitialvoid('Void.txt', "Lvoid.txt")
+	if os.path.isfile(Void_file):
+		Void_position, Void_length = getinitialvoid(Void_file ,Lvoid_file )
 	else:
 		Void_position = [] # for each tree, number of zero = branch number 0 means no void, 1 means void is on the left, -1 means on the write
 		Void_length = [] # length of void on the branch, if 0 means no void.	
@@ -229,14 +210,258 @@ def onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa
 			for j in range (tree_list[i].branch_num):
 				Void_position[i].append(0)
 				Void_length[i].append(0)
-		with open('Void.txt', 'w') as positionfile:
-			positionfile.writelines('\t'.join(str(j) for j in i) + '\n' for i in Void_position) 
-
-	print(len(Void_position[-1]))
-	print(len(Void_length[-1]))		
-			
+		#with open('Void.txt', 'w') as positionfile:
+			#positionfile.writelines(' '.join(str(j) for j in i) + '\n' for i in Void_position) 
+		#with open('Lvoid.txt', 'w') as lvfile:
+			#lvfile.writelines(' '.join(str(j) for j in i) + '\n' for i in Void_length) 
+					
 	#clean_repo(tree_info, tree_width, tree_curden,tree_leng)
-	#simulation_process(tree_list) 		
+	stress_collection, Void_collection, Void_length_collection = simulation_process(tree_list,tree_stress,Void_position,Void_length,E,Z,cu_res,Omega)
+	update_file(stress_collection, Void_collection, Void_length_collection, stress_file, Void_file,Lvoid_file,tree_list,nx)
+def update_file(stress_collection, Void_collection, Void_length_collection, stress_file, Void_file,Lvoid_file,tree_list,nx):
+	with open(stress_file, 'w') as stressfile:
+		for i in range(len(tree_list)):
+			for j in range(len(stress_collection[i])):
+				if j%(nx-1) == 0 and j!=len(stress_collection[i]) - 1:
+					b_num = int(j/(nx-1))
+					b_name = tree_list[i].branch_name[b_num]
+					stress_data = sum(stress_collection[i][j].tolist())
+					outputline = b_name + ' ' + str(stress_data) + '\n'
+					stressfile.writelines(outputline)
+				else:
+					stress_data = sum(stress_collection[i][j].tolist())
+	
+					outputline = ' ' + str(stress_data) + '\n'
+					stressfile.writelines(outputline)
+
+		#stressfile.writelines(' '.join(str(sum(j.tolist())) for j in i) + '\n' for i in stress_collection) 
+	with open(Void_file, 'w') as positionfile:
+		positionfile.writelines(' '.join(str(j) for j in i) + '\n' for i in Void_collection) 
+	with open(Lvoid_file, 'w') as lvfile:
+		lvfile.writelines(' '.join(str(j) for j in i) + '\n' for i in Void_length_collection) 
+def simulation_process(tree_list,tree_stress,Void_position,Void_length,E,Z,cu_res,Omega):
+	
+	stress_collection = []
+	Void_collection = []
+	Void_length_collection = []
+		
+	for i in range(len(tree_list)):
+		new_stress, onetree_Void_position, onetree_Void_length = 	one_tree_simulation(tree_list[i],tree_stress[i],Void_position[i],Void_length[i],E,Z,cu_res,Omega,t_total)
+		stress_collection.append(new_stress)
+		Void_collection.append(onetree_Void_position)
+		Void_length_collection.append(onetree_Void_length)
+	#print(type(stress_collection[0][0]))
+	
+	return stress_collection, Void_collection, Void_length_collection			 
+	#J_list_norm = normalize_vurden(tree_list) # all the current density over its maximum absolute value
+
+def solvenuctree(J_list_norm, one_tree,nx,t_total,kappa, Stress_norm,E,Z,cu_res,Omega,onetree_Void_position,onetree_Void_length):
+	G,C,B = matrix_formation_nuc(J_list_norm, one_tree,nx)
+	tstamp = normalize_time(t_total, one_tree,kappa)
+	pwl = [1] * len(B)
+	sol_stress = backEuler_fdm(G,C,B,tstamp,Stress_norm,pwl)
+	new_stress = denormalize_stress(one_tree, sol_stress,E,Z,cu_res,Omega)
+	max_new_stress = max(new_stress)
+	if max_new_stress > 5e8:
+		position = new_stress.index(max(new_stress))
+		left_branch_num = int(position//(nx - 1))
+		if (left_branch_num) == len(onetree_Void_position):
+			onetree_Void_position[left_branch_num -1] = -1
+		elif left_branch_num == 0:
+			onetree_Void_position = [left_branch_num] = 1
+		else:
+			onetree_Void_position[left_branch_num -1] = -1
+			onetree_Void_position[left_branch_num] = 1
+	return new_stress, onetree_Void_position, onetree_Void_length
+def one_tree_simulation(one_tree,one_tree_stress,onetree_Void_position,onetree_Void_length,E,Z,cu_res,Omega,t_total):
+	J_list_norm = normalize_curden(one_tree)
+	Stress_norm = normalize_stress(one_tree, one_tree_stress,E,Z,cu_res,Omega)
+	if all(v == 0 for v in onetree_Void_position):
+		new_stress, onetree_Void_position, onetree_Void_length = solvenuctree(J_list_norm, one_tree,nx,t_total,kappa, Stress_norm,E,Z,cu_res,Omega,onetree_Void_position,onetree_Void_length)	
+		#G,C,B = matrix_formation_nuc(J_list_norm, one_tree,nx)
+		#tstamp = noramlize_time(t_total, one_tree,kappa)
+		#pwl = [1] * len(B)
+	
+		#sol_stress = backEuler_fdm(G,C,B,tstamp,Stress_norm,pwl)
+		#new_stress = denormalize_stress(one_tree, sol_stress,E,Z,cu_res,Omega)
+		#max_new_stress = max(new_stress)
+		#if max_new_stress > 5e8:
+		#	position = new_stress.index(max(new_stress))
+		#	left_branch_num = int(position//(nx - 1)) 
+		#	if (left_branch_num) == len(onetree_Void_position) - 1:
+		#		onetree_Void_position[left_branch_num] = -1
+		#	else:
+		#		onetree_Void_position[left_branch_num] = -1
+		#		onetree_Void_position[left_branch_num + 1] = 1
+
+
+	else:
+		new_stress, onetree_Void_position, onetree_Void_length = solvegrotree(J_list_norm, one_tree,nx,t_total,kappa, Stress_norm,E,Z,cu_res,Omega,onetree_Void_position,onetree_Void_length)	
+	
+			
+	return new_stress, onetree_Void_position, onetree_Void_length		
+def solvegrotree(J_list_norm, one_tree,nx,t_total,kappa, Stress_norm,E,Z,cu_res,Omega,onetree_Void_position,onetree_Void_length):
+	new_stress = []
+	tstamp = normalize_time(t_total, one_tree,kappa)
+	if onetree_Void_position[0] ==	1:
+		print("t0")
+		G,C,B = matrix_formation_growth(J_list_norm, one_tree,nx)
+		pwl = [1] * len(B)
+
+		sol_stress = backEuler_fdm(G,C,B,tstamp,Stress_norm,pwl)
+		new_stress = denormalize_stress(one_tree, sol_stress,E,Z,cu_res,Omega)
+			
+	elif onetree_Void_position[-1] == -1:
+		# inverse stress and tree_information
+		Stress_norm_tmp, J_list_norm_tmp, tree_tmp = inverse_information(Stress_norm,J_list_norm,one_tree)
+		G,C,B = matrix_formation_growth(J_list_norm_tmp, tree_tmp,nx)
+		pwl = [1] * len(B)
+
+		sol_stress_tmp = backEuler_fdm(G,C,B,tstamp,Stress_norm_tmp,pwl)
+		new_stress_tmp = denormalize_stress(tree_tmp, sol_stress_tmp,E,Z,cu_res,Omega)
+		new_stress , _, _ = inverse_information(new_stress_tmp ,J_list_norm_tmp,tree_tmp)
+	
+		print("t1")
+	else:
+		print("t2")
+	return new_stress, onetree_Void_position, onetree_Void_length
+def inverse_information(Stress_norm,J_list_norm,one_tree):
+	Stress_norm_tmp = []
+	J_list_norm_tmp = []
+	for i in range(len(Stress_norm)):
+		Stress_norm_tmp.append(Stress_norm[-1-i])
+	for i in range(len(J_list_norm)):
+		J_list_norm_tmp.append(J_list_norm[-1-i])
+	branch_num_tmp = one_tree.branch_num
+	branch_name_origin = one_tree.branch_name
+	branch_length_origin = one_tree.branch_length
+	branch_width_origin = one_tree.branch_width
+	branch_curden_origin = one_tree.branch_curden
+	branch_name_tmp = []
+	branch_length_tmp = []
+	branch_width_tmp = []
+	branch_curden_tmp = []
+	for i in range(len(branch_name_origin)):
+		branch_name_tmp.append(branch_name_origin[-1-i])
+		branch_length_tmp.append(branch_length_origin[-1-i])
+		branch_width_tmp.append(branch_width_origin[-1-i])
+		branch_curden_tmp.append(branch_curden_origin[-1-i])
+
+	tree_tmp = tree(branch_num_tmp,branch_name_tmp, branch_length_tmp, branch_width_tmp,branch_curden_tmp)
+	return 	Stress_norm_tmp, J_list_norm_tmp, tree_tmp 
+
+def matrix_formation_growth(J_list_norm0, one_tree,nx):
+	delta = 3e-7
+	J_list_norm = np.reshape(np.asarray(J_list_norm0),(len(J_list_norm0),1))
+	
+	n_wires = one_tree.branch_num
+	
+	w_lengs = np.asarray(one_tree.branch_length)
+	num_Junctions = n_wires - 1
+	nx_total = int((nx * n_wires) - num_Junctions)
+	dx = 1/(nx_total - 1)
+	G = np.zeros([nx_total,nx_total])
+	B = np.zeros([nx_total,n_wires])
+	for i in range(1,(nx_total - 1)):
+		G[i,i-1] = G[i,i-1] + 1
+		G[i,i] = G[i,i] - 2
+		G[i,i + 1] = G[i,i + 1] + 1
+	G[0,0] = G[0,0] - 1
+	G[0,1] = G[0,1] + 1
+	G[-1,-1] = G[-1,-1] - 1
+	G[-1,-2] = G[-1,-2] + 1
+	G[0,0] = G[0,0] * (-1-(dx/delta))
+	index = 0
+	t = np.zeros([1,n_wires])
+	for i in range(n_wires):
+		B[index,i] = 1
+		B[int(index + nx - 1), i] = -1
+		index = int(index + nx - 1)
+	C = np.ones([nx_total])
+	tmp =np.divide(J_list_norm,dx)
+	B = np.dot(B,tmp)
+	B [0] = 0
+	G = -G
+	G = np.divide(G,(dx*dx))
+	return G, C, B
+def normalize_time(t_total, one_tree,kappa):
+	onetree_branchleng = one_tree.branch_length.copy()
+	treeleng = sum(onetree_branchleng)
+	nor_t_total = t_total /(treeleng*treeleng) * kappa
+	tstep = nor_t_total / 10
+	tstamp = []
+	for i in range(int(nor_t_total/tstep)):
+		tstamp.append(i*tstep)
+	return tstamp
+def denormalize_stress(one_tree, sol_stress,E,Z,cu_res,Omega):
+	onetree_curden = one_tree.branch_curden.copy()
+	max_curden = abs(max(onetree_curden,key = abs)) 
+	g1 = (E*Z*cu_res*max_curden)/Omega  
+	onetree_branchleng = one_tree.branch_length.copy()
+	treeleng = sum(onetree_branchleng)
+	denormalized_stress = []
+	for i in range(len(sol_stress)):
+		denormalized_stress.append(sol_stress[i]*g1*treeleng)
+	return denormalized_stress	
+def backEuler_fdm(G,C,B,tstamp,Stress_norm,pwl):
+	C_fdm = np.diag(C)
+	G_fdm = np.asarray(G)
+	B_fdm = np.asarray(B)
+	Stress_norm_fdm = np.asarray(Stress_norm)
+	Stress_norm_fdm = np.reshape(Stress_norm_fdm, (len(Stress_norm_fdm),1))
+	u_fdm = np.reshape(np.asarray(pwl),(len(pwl),1))
+
+	dt = tstamp[2] - tstamp[1]
+	for i in range (len(tstamp) - 1):
+		item1 = np.divide(C_fdm,dt)
+		
+		item2 = np.add(G_fdm, item1)
+		item3 = np.multiply(B,u_fdm[i+1])
+		item4 = np.dot(item1,Stress_norm_fdm)
+		item5 = np.add(item3,item4)
+		item6 = np.linalg.lstsq(item2,item5)[0]
+		Stress_norm_fdm = np.copy(item6) 	
+		#Stress_norm_fdm = (G_fdm + C_fdm / dt)\ (B * u_fdm[i + 1] + (C / dt) * Stress_norm_fdm)
+	return Stress_norm_fdm
+def normalize_stress(one_tree,one_tree_stress,E,Z,cu_res,Omega):
+	onetree_curden = one_tree.branch_curden.copy()
+	max_curden = abs(max(onetree_curden,key = abs)) 
+	g1 = (E*Z*cu_res*max_curden)/Omega  
+	onetree_branchleng = one_tree.branch_length.copy()
+	treeleng = sum(onetree_branchleng)
+	normalized_stress = []
+	for i in range(len(one_tree_stress)):
+		normalized_stress.append(one_tree_stress[i]/g1/treeleng)
+	return normalized_stress	 
+def normalize_curden(one_tree):
+	onetree_curden = one_tree.branch_curden.copy()
+	J_list_norm  = []
+	max_curden = abs(max(onetree_curden,key = abs)) 
+	for i in range(len(onetree_curden)):
+		J_list_norm.append(onetree_curden[i]/max_curden)	
+	return J_list_norm
+def getinitialvoid(voidfile, Lvoidfile):
+	Void_position = []
+	Void_length = []
+	with open (voidfile, 'r') as f:
+		line = f.readline()
+		while line:
+			one_tree_position = []
+			line_sp = line.split()
+			for num in line_sp:
+				one_tree_position.append(int(num))
+			Void_position.append(one_tree_position)
+			line = f.readline()
+	with open (Lvoidfile, 'r') as f:
+		line = f.readline()
+		while line:
+			one_tree_length = []
+			line_sp = line.split()
+			for num in line_sp:
+				one_tree_length.append(float(num))
+			Void_length.append(one_tree_length)
+			line = f.readline()	
+	return Void_position, Void_length 
 def get_stress_from_file(u_stress):
 	tree_stress = []
 	with open (u_stress, 'r') as f:
@@ -248,23 +473,28 @@ def get_stress_from_file(u_stress):
 		
 		current_tree_name = tree_name
 		one_tree_stress = []
+		c = 0
 		while line:
 			line_sp = line.split()
 			if len(line_sp) == 2:
 				name = line_sp[0]
 				tree_name = name.split("-")[0] + "-" + name.split("-")[1]
 				if tree_name != current_tree_name:
+					c = c + 1
 					tree_stress.append(one_tree_stress)
 					one_tree_stress = []
 					current_tree_name = tree_name
-				stress = line_sp[1]
+				stress = float(line_sp[1])
 				one_tree_stress.append(stress)
+		 
+				
 			else:
-				stress = line_sp[0]
+				stress = float(line_sp[0])
+				
 				one_tree_stress.append(stress)
-
-	
-			line = f.readline()
+			line = f.readline()	
+		
+		tree_stress.append(one_tree_stress)
 	return tree_stress				
 def getinitialstreee(tree_list,nx):
 	# set all 0 for initial stress
@@ -283,23 +513,13 @@ def clean_repo(tree_info, tree_width, tree_curden,tree_leng):
 	os.remove(tree_curden)
 	os.remove(tree_leng)
 
-def EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total, tstep,tstamp,input_spice):
-	tstamp_flag = 1
-	stop_flag = 0
-	cdnum = int(t_total/tstep)
-	cdlist = [1] * cdnum
-	init_flag = 1
-	interIdx = 0 
-	pwl = cdlist.copy()
-	for i in range(1):
-		if stop_flag == 1:
-			break
-		onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total, tstep,tstamp,tstamp_flag,stop_flag, cdnum, cdlist,init_flag, i, input_spice)	
+def EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice):
+	onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice)	
 
 if __name__ == '__main__':
 	constant_file = "EM_spice_constant.txt"
 	input_spice = "armcore.sp"	
-	T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total, tstep,tstamp = get_constant(constant_file)
-	EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total, tstep,tstamp,input_spice )
+	T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total= get_constant(constant_file)
+	EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice )
 		
 

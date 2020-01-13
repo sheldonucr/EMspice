@@ -12,4 +12,5 @@ hTa,2e-8
 Z,10
 nx,20
 wire_length,1
-t_total,15552000
+t_total,1e-3
+tstep,1e-4
