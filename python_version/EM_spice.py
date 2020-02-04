@@ -68,7 +68,6 @@ def gettree(tree_info,tree_width, tree_curden, tree_leng):
 	all_branch_curden = get_all_curden(tree_curden)
 	all_branch_leng = get_all_leng(tree_leng)
 	tree_list = gettree_info(tree_info, all_branch_width, all_branch_curden, all_branch_leng)
-	print(tree_list[0].branch_width )	
 	return tree_list
 def get_one_branch_name(line):
 	name = line.split()[0]
@@ -213,7 +212,7 @@ def onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa
 				Void_position[i].append(0)
 				Void_length[i].append(0)
 					
-	clean_repo(tree_info, tree_width, tree_curden,tree_leng)
+	clean_repo(tree_info,tree_curden,tree_leng)
 	Void_length_ini = deepcopy(Void_length)
 	stress_collection, Void_collection, Void_length_collection = simulation_process(tree_list,tree_stress,Void_position,Void_length,E,Z,cu_res,Omega,B0)
 	update_sp(Void_collection,Void_length_collection,tree_list,input_spice,Void_length_ini,Ta_res,hTa,hCu)	
@@ -243,8 +242,6 @@ def update_file(stress_collection, Void_collection, Void_length_collection, stre
 def update_sp(Void_position_collection,Void_length_collection,tree_list,input_spice,Void_length_origin,Ta_res,hTa,hCu):
 	failed_branch, failed_void_length, failed_crit_length,origin_void_length_b, failed_position = get_growth_tree(Void_position_collection,Void_length_collection,tree_list,Void_length_origin)# get trees whose void is larger than cross section
 	
-	print("FC")
-	print(failed_crit_length)	
 	early_failed_branch,early_failed_void_length,early_failed_crit_length,late_failed_branch,late_failed_void_length,late_failed_crit_length,late_failed_origin_length,early_position, late_position =  early_late_failure(failed_branch, failed_void_length, failed_crit_length,origin_void_length_b,failed_position)
 	modify_sp(early_failed_branch, early_failed_void_length, early_failed_crit_length, late_failed_branch, late_failed_void_length, late_failed_crit_length,input_spice,late_failed_origin_length,Ta_res,hTa,hCu,early_position, late_position)	
 
@@ -419,28 +416,51 @@ def get_early_failure_line(early_branch, early_void_length, early_crit_length,or
 				newline2 = next_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + next_line_sp[3]
 			elif origin_line2 == next_line1:
 				new_id_coor = y_coor_r + 1
+				new_part = origin_line1 .split("_")[0] + "_" + origin_line1.split("_")[1] + "_" + str(new_id_coor)
+	
+				#new_part = origin_line1 .split("_")[0] + "_" + str(new_id_coor) + "_" + origin_line1.split("_")[2] 
+				newline1 = origin_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + origin_line_sp[3]
+				newline2 = next_line_sp[0] + " " +  new_part+ " " + next_line_sp[2] + " " + next_line_sp[3]
+			elif origin_line2 == next_line2:
+				new_id_coor = y_coor_r + 1
+				new_part = origin_line1 .split("_")[0] + "_" + origin_line1.split("_")[1] + "_" + str(new_id_coor)
+				#new_part = origin_line1 .split("_")[0] + "_" + str(new_id_coor) + "_" + origin_line1.split("_")[2]
+				newline1 = origin_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + origin_line_sp[3] 
+				newline2 = next_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + next_line_sp[3]
+			else:
+				pass
+		else:
+			if origin_line1 == next_line1:
+				new_id_coor = x_coor_l + 1
+				new_part = origin_line1 .split("_")[0] + "_" + str(new_id_coor) + "_" + origin_line1.split("_")[2] 
+				#new_part = origin_line1 .split("_")[0] + "_" + origin_line1.split("_")[1] + "_" + str(new_id_coor)
+				newline1 = origin_line_sp[0] + " " + new_part+ " " + next_line_sp[2] + " " + origin_line_sp[3]
+				newline2 = next_line_sp[0] + " " +  new_part+ " " + next_line_sp[2] + " " + next_line_sp[3]
+			elif origin_line1 == next_line2:
+				new_id_coor = x_coor_l + 1
+				new_part = origin_line1 .split("_")[0] + "_" + str(new_id_coor) + "_" + origin_line1.split("_")[2] 
+				#new_part = origin_line1 .split("_")[0] + "_" + origin_line1.split("_")[1] + "_" + str(new_id_coor)
+				newline1 = origin_line_sp[0] + " " + new_part+ " " + origin_line_sp[2] + " " + origin_line_sp[3]
+				newline2 = next_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + next_line_sp[3]
+			elif origin_line2 == next_line1:
+				new_id_coor = x_coor_r + 1
 
 				new_part = origin_line1 .split("_")[0] + "_" + str(new_id_coor) + "_" + origin_line1.split("_")[2] 
 				newline1 = origin_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + origin_line_sp[3]
 				newline2 = next_line_sp[0] + " " +  new_part+ " " + next_line_sp[2] + " " + next_line_sp[3]
 			elif origin_line2 == next_line2:
-				new_id_coor = y_coor_r + 1
+				new_id_coor = x_coor_r + 1
 
 				new_part = origin_line1 .split("_")[0] + "_" + str(new_id_coor) + "_" + origin_line1.split("_")[2]
 				newline1 = origin_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + origin_line_sp[3] 
 				newline2 = next_line_sp[0] + " " + next_line_sp[1] + " " + new_part + " " + next_line_sp[3]
 			else:
 				pass
-		
+	
 		
 	return newline1, newline2, new_part
 def get_deltR(late_void_length,late_failed_origin_length, failed_branch_width,Ta_res,hTa,hCu):
-	print("deltR data")
-	print(late_void_length )
-	print(late_failed_origin_length)
-	print(failed_branch_width)
 	delt_R = Ta_res*(late_void_length - late_failed_origin_length)/(hTa*failed_branch_width)
-	print(delt_R)
 	return delt_R
 def get_late_failure_line(late_branch, late_void_length, late_crit_length,origin_line,late_failed_origin_length,Ta_res,hTa,hCu,position):
 	# here critical length is width
@@ -479,9 +499,6 @@ def get_growth_tree(Void_position,Void_length,tree_list,Void_length_origin):
 			else:
 				left_branch = Void_position[i].index(-1)
 				right_branch = Void_position[i].index(1)
-				print("RL name")
-				print(tree_list[i].branch_name[left_branch])
-				print(tree_list[i].branch_name[right_branch])
 				crit_void.append(tree_list[i].branch_width[left_branch])
 				crit_void.append(tree_list[i].branch_width[right_branch])
 				
@@ -493,9 +510,6 @@ def get_growth_tree(Void_position,Void_length,tree_list,Void_length_origin):
 				origin_void_length_b.append(Void_length_origin[i][right_branch]) 
 				all_position.append(-1)
 				all_position.append(1)  
-			print("CV") 
-			print(crit_void)
-			print(void_length)
 			for i in range(len(crit_void)):
 				if void_length[i] > crit_void[i]:
 					failed_branch.append(branch_id[i])
@@ -898,20 +912,72 @@ def getinitialstreee(tree_list,nx):
 			one_tree_stress.append(0) # add initial stress for nodes.
 		tree_stress.append(one_tree_stress)	
 	return tree_stress	
-def clean_repo(tree_info, tree_width, tree_curden,tree_leng):
+def clean_repo(tree_info,tree_curden,tree_leng):
 	os.remove(tree_info)
-	os.remove(tree_width)
 	os.remove(tree_curden)
 	os.remove(tree_leng)
 
 def EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice,simulation_number):
 	for i in range(simulation_number):
 		onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice)	
+def prepare_repo(tree_info,tree_width,tree_curden,tree_leng,tree_fid,tree_ftid,stress_file,Void_file,Lvoid_file):
+	try:
+		os.remove(tree_info)
+	except:
+		pass
+	try:
+		os.remove(tree_width)
+	except:
+		pass	
+	try:
+		os.remove(tree_curden)
+	except:
+		pass
+	try:
+		os.remove(tree_leng)
+	except:
+		pass	
+	try:
+		os.remove(tree_fid)
+	except:
+		pass	
+
+	try:
+		os.remove(tree_ftid)
+	except:
+		pass	
+	try:
+		os.remove(stress_file)
+	except:
+		pass	
+	try:
+		os.remove(Void_file)
+	except:
+		pass	
+	try:
+		os.remove(Lvoid_file)
+	except:
+		pass	
+	with open (tree_width, 'w+'):
+		pass
+	with open (tree_ftid, 'w+'):
+		pass
 
 if __name__ == '__main__':
 	constant_file = "EM_spice_constant.txt"
 	input_spice = "armcore.sp"
-	simulation_number = 1	
+	tree_info = "tree_info.txt"
+	tree_width = "tree_width.txt"
+	tree_curden = "tree_curden.txt"
+	tree_leng = "tree_leng.txt"
+	tree_ftid = "tree_ftid.txt"
+	tree_fid = "tree_fid.txt"
+	stress_file = 'u_stress.txt'
+	Void_file = 'Void.txt'
+	Lvoid_file = 'Lvoid.txt'
+		
+	prepare_repo(tree_info,tree_width,tree_curden,tree_leng,tree_fid,tree_ftid,stress_file,Void_file,Lvoid_file) # remove useless file and prepare tree width and tree ftid
+	simulation_number = 4	
 	T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total= get_constant(constant_file)
 	EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice, simulation_number)
 		
