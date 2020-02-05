@@ -919,7 +919,14 @@ def clean_repo(tree_info,tree_curden,tree_leng):
 
 def EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice,simulation_number):
 	for i in range(simulation_number):
-		onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice)	
+		new_spice_name = input_spice.split('.')[0] + "_" + str(i) + ".sp"
+		copy_spice_line = 'cp ' + input_spice + ' ' + new_spice_name  
+		os.system(copy_spice_line)
+		onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice)
+		voltage_file = "tree_node_voltage.txt"
+		new_voltage_file = voltage_file.split('.')[0] + "_" + str(i) + ".txt"
+		copy_voltage_line = 'cp ' + voltage_file + ' ' + new_voltage_file  
+		os.system(copy_voltage_line)
 def prepare_repo(tree_info,tree_width,tree_curden,tree_leng,tree_fid,tree_ftid,stress_file,Void_file,Lvoid_file):
 	try:
 		os.remove(tree_info)
@@ -975,9 +982,9 @@ if __name__ == '__main__':
 	stress_file = 'u_stress.txt'
 	Void_file = 'Void.txt'
 	Lvoid_file = 'Lvoid.txt'
-		
+			
 	prepare_repo(tree_info,tree_width,tree_curden,tree_leng,tree_fid,tree_ftid,stress_file,Void_file,Lvoid_file) # remove useless file and prepare tree width and tree ftid
-	simulation_number = 4	
+	simulation_number = 2	
 	T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total= get_constant(constant_file)
 	EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice, simulation_number)
 		
