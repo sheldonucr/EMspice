@@ -53,7 +53,7 @@ def get_all_curden(tree_curden):
 		all_branch_curden_origin = f.readlines()
 		for branch_curden_origin in all_branch_curden_origin:
 			branch_curden = branch_curden_origin.split()[-1]
-			all_branch_curden.append(float(branch_curden))
+			all_branch_curden.append(-float(branch_curden))
 	return all_branch_curden 
 def get_all_leng(tree_leng):
 	all_branch_leng = []
@@ -215,7 +215,7 @@ def onestep_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa
 	clean_repo(tree_info,tree_curden,tree_leng)
 	Void_length_ini = deepcopy(Void_length)
 	stress_collection, Void_collection, Void_length_collection = simulation_process(tree_list,tree_stress,Void_position,Void_length,E,Z,cu_res,Omega,B0)
-	update_sp(Void_collection,Void_length_collection,tree_list,input_spice,Void_length_ini,Ta_res,hTa,hCu)	
+	update_sp(Void_collection,Void_length_collection,tree_list,input_spice,Void_length_ini,Ta_res,hTa,hCu, cu_res)	
 	update_file(stress_collection, Void_collection, Void_length_collection, stress_file, Void_file,Lvoid_file,tree_list,nx)
 def update_file(stress_collection, Void_collection, Void_length_collection, stress_file, Void_file,Lvoid_file,tree_list,nx):
 	with open(stress_file, 'w') as stressfile:
@@ -239,11 +239,11 @@ def update_file(stress_collection, Void_collection, Void_length_collection, stre
 	with open(Lvoid_file, 'w') as lvfile:
 		lvfile.writelines(' '.join(str(j) for j in i) + '\n' for i in Void_length_collection) 
 
-def update_sp(Void_position_collection,Void_length_collection,tree_list,input_spice,Void_length_origin,Ta_res,hTa,hCu):
+def update_sp(Void_position_collection,Void_length_collection,tree_list,input_spice,Void_length_origin,Ta_res,hTa,hCu,cu_res):
 	failed_branch, failed_void_length, failed_crit_length,origin_void_length_b, failed_position = get_growth_tree(Void_position_collection,Void_length_collection,tree_list,Void_length_origin)# get trees whose void is larger than cross section
 	
 	early_failed_branch,early_failed_void_length,early_failed_crit_length,late_failed_branch,late_failed_void_length,late_failed_crit_length,late_failed_origin_length,early_position, late_position =  early_late_failure(failed_branch, failed_void_length, failed_crit_length,origin_void_length_b,failed_position)
-	modify_sp(early_failed_branch, early_failed_void_length, early_failed_crit_length, late_failed_branch, late_failed_void_length, late_failed_crit_length,input_spice,late_failed_origin_length,Ta_res,hTa,hCu,early_position, late_position)	
+	modify_sp(early_failed_branch, early_failed_void_length, early_failed_crit_length, late_failed_branch, late_failed_void_length, late_failed_crit_length,input_spice,late_failed_origin_length,Ta_res,hTa,hCu,cu_res,early_position, late_position)	
 
 
 def early_late_failure(failed_branch, failed_void_length, failed_crit_length,Void_length_origin, failed_position):
@@ -273,7 +273,7 @@ def early_late_failure(failed_branch, failed_void_length, failed_crit_length,Voi
 
 	return 	early_failed_branch,early_failed_void_length,early_failed_crit_length,late_failed_branch,late_failed_void_length,late_failed_crit_length,late_failed_origin_length,early_position, late_position
 
-def modify_sp(early_failed_branch, early_failed_void_length, early_failed_crit_length, late_failed_branch, late_failed_void_length, late_failed_crit_length,input_spice,late_failed_origin_length,Ta_res,hTa,hCu,early_position, late_position):
+def modify_sp(early_failed_branch, early_failed_void_length, early_failed_crit_length, late_failed_branch, late_failed_void_length, late_failed_crit_length,input_spice,late_failed_origin_length,Ta_res,hTa,hCu,cu_res,early_position, late_position):
 	with open (input_spice, 'r') as f:
 		all_line = f.readlines()
 		modified_list = [] # list of modified branches with branch id
@@ -323,7 +323,7 @@ def modify_sp(early_failed_branch, early_failed_void_length, early_failed_crit_l
 					print(line1_id)
 					print(early_failure_line1)
 					print(all_line[line1_id])
-					all_line[line1_id] = early_failure_line1
+					all_line[line1_id] = early_failure_line1 + "\n"
 				else:
 					print(line1_id)
 					print(early_failure_line1)
@@ -337,7 +337,7 @@ def modify_sp(early_failed_branch, early_failed_void_length, early_failed_crit_l
 		
 			if all_line[i].split()[0] in late_failed_branch:
 				index = late_failed_branch.index(all_line[i].split()[0])
-				late_failure_line = get_late_failure_line(late_failed_branch[index], late_failed_void_length[index], late_failed_crit_length[index],all_line[i],late_failed_origin_length[index],Ta_res,hTa,hCu,late_position[index])
+				late_failure_line = get_late_failure_line(late_failed_branch[index], late_failed_void_length[index], late_failed_crit_length[index],all_line[i],late_failed_origin_length[index],Ta_res,hTa,hCu,cu_res,late_position[index])
 				print(i)
 				print(late_failure_line)
 				print(all_line[i])
@@ -459,12 +459,12 @@ def get_early_failure_line(early_branch, early_void_length, early_crit_length,or
 	
 		
 	return newline1, newline2, new_part
-def get_deltR(late_void_length,late_failed_origin_length, failed_branch_width,Ta_res,hTa,hCu):
-	delt_R = Ta_res*(late_void_length - late_failed_origin_length)/(hTa*failed_branch_width)
+def get_deltR(late_void_length,late_failed_origin_length, failed_branch_width,Ta_res,hTa,hCu, cu_res):
+	delt_R = (late_void_length - late_failed_origin_length) * (Ta_res/hTa*(1/(2 * hCu + failed_branch_width)) - cu_res/(hCu * failed_branch_width))
 	return delt_R
-def get_late_failure_line(late_branch, late_void_length, late_crit_length,origin_line,late_failed_origin_length,Ta_res,hTa,hCu,position):
+def get_late_failure_line(late_branch, late_void_length, late_crit_length,origin_line,late_failed_origin_length,Ta_res,hTa,hCu,cu_res,position):
 	# here critical length is width
-	delt_R = get_deltR(late_void_length,late_failed_origin_length,late_crit_length,Ta_res,hTa,hCu)
+	delt_R = get_deltR(late_void_length,late_failed_origin_length,late_crit_length,Ta_res,hTa,hCu,cu_res)
 	origin_line_sp = origin_line.split()
 	new_line = origin_line_sp[0] + " "+ origin_line_sp[1] + " " + origin_line_sp[2] + " " + str(float(origin_line_sp[3]) + delt_R)
 	return new_line 
@@ -609,29 +609,23 @@ def solvegrotree(J_list_norm, one_tree,nx,t_total,kappa, Stress_norm,E,Z,cu_res,
 	
 		onetree_Void_length[-1] = L_Void
 	else:
-		#print(sum(Stress_norm))
 		# cut the wire on the void
 		Stress_norm_1, J_list_norm_1, tree_1, Stress_norm_2, J_list_norm_2, tree_2  =  cuttree(onetree_Void_position, Stress_norm,J_list_norm,one_tree,nx)
 		
 		G1,C1,B1 = matrix_formation_growth(J_list_norm_1, tree_1,nx)
 		pwl_1 = [1] * len(B1)
-		#print(B1)
 		#plt.plot(Stress_norm_1)
 		#plt.show()	
-		#print("case2" + str(Stress_norm_1[0]))
 		sol_stress_1 = backEuler_fdm(G1,C1,B1,tstamp,Stress_norm_1,pwl_1)
 		#plt.plot(sol_stress_1)
 		#plt.show()
-		#print(sum(sol_stress_1))
 		G2,C2,B2 = matrix_formation_growth(J_list_norm_2, tree_2,nx)
 		pwl_2 = [1] * len(B2)
 		#plt.plot(Stress_norm_2)
 		#plt.show()	
-		#print(Stress_norm_2[0])
 		sol_stress_2 = backEuler_fdm(G2,C2,B2,tstamp,Stress_norm_2,pwl_2)
 		#plt.plot(sol_stress_2)
 		#plt.show()
-		#print(sum(sol_stress_2))
 		com_solstress = combine_stress(sol_stress_1, sol_stress_2)
 		new_stress = denormalize_stress(one_tree, com_solstress,E,Z,cu_res,Omega)
 		#plt.plot(new_stress)
@@ -658,8 +652,6 @@ def cal_void_midcase(tree_1,tree_2,new_stress,B0,nx):
 	stress_2 = new_stress[left_node_num - 1 : len(new_stress)]
 	Lvoid_left = sum(calculate_void(stress_1,tree_1,B0).tolist())
 	Lvoid_right = sum(calculate_void(stress_2,tree_2,B0).tolist())
-	#print(Lvoid_left)
-	#print(Lvoid_right)
 	return Lvoid_left, Lvoid_right 	
 def calculate_void(new_stress,one_tree,B0):
 	n_wires = one_tree.branch_num
@@ -913,12 +905,24 @@ def getinitialstreee(tree_list,nx):
 		tree_stress.append(one_tree_stress)	
 	return tree_stress	
 def clean_repo(tree_info,tree_curden,tree_leng):
+	#info_file = "tree_info.txt"
+	#new_info_file = info_file.split('.')[0] + "_1.txt"
+	
+	#copy_info_line = 'cp ' + info_file + ' ' + new_info_file  
+	#os.system(copy_info_line)
+	#curden_file = "tree_curden.txt"
+	#new_curden_file = info_file.split('.')[0] + "_1.txt"
+	
+	#copy_curden_line = 'cp ' + curden_file + ' ' + new_curden_file  
+	#os.system(copy_info_line)
+	#os.system(copy_curden_line)
 	os.remove(tree_info)
 	os.remove(tree_curden)
 	os.remove(tree_leng)
 
 def EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice,simulation_number):
 	for i in range(simulation_number):
+		print(i)
 		new_spice_name = input_spice.split('.')[0] + "_" + str(i) + ".sp"
 		copy_spice_line = 'cp ' + input_spice + ' ' + new_spice_name  
 		os.system(copy_spice_line)
@@ -927,6 +931,7 @@ def EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, 
 		new_voltage_file = voltage_file.split('.')[0] + "_" + str(i) + ".txt"
 		copy_voltage_line = 'cp ' + voltage_file + ' ' + new_voltage_file  
 		os.system(copy_voltage_line)
+
 def prepare_repo(tree_info,tree_width,tree_curden,tree_leng,tree_fid,tree_ftid,stress_file,Void_file,Lvoid_file):
 	try:
 		os.remove(tree_info)
@@ -972,7 +977,7 @@ def prepare_repo(tree_info,tree_width,tree_curden,tree_leng,tree_fid,tree_ftid,s
 
 if __name__ == '__main__':
 	constant_file = "EM_spice_constant.txt"
-	input_spice = "armcore.sp"
+	input_spice = "b424.sp"
 	tree_info = "tree_info.txt"
 	tree_width = "tree_width.txt"
 	tree_curden = "tree_curden.txt"
@@ -984,7 +989,7 @@ if __name__ == '__main__':
 	Lvoid_file = 'Lvoid.txt'
 			
 	prepare_repo(tree_info,tree_width,tree_curden,tree_leng,tree_fid,tree_ftid,stress_file,Void_file,Lvoid_file) # remove useless file and prepare tree width and tree ftid
-	simulation_number = 2	
+	simulation_number = 40	
 	T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total= get_constant(constant_file)
 	EM_simulation(T, D0, E, Ea, kB, Da, B0, Omega, cu_res, hCu, Ta_res, hTa, Z, kappa ,nx,wire_length, t_total,input_spice, simulation_number)
 		
