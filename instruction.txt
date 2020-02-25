@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 There is two part in this code, one part is to convert the .pna file to spice file, one is to run EM spice.
 Run the EM spice file with output .sp file
 Detailed run information and example are in the corresponding repo
+=======
+# This is the Python version of the EMSpice, which perform the mult-physics electrical and stress analysis of multi-segment interconnect wires. 
+>>>>>>> 573e1d65be20c810b526d2b1c61ab20c5deee17d
