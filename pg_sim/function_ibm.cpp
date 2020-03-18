@@ -9,7 +9,7 @@
 
 /*
  *    $RCSfile: function_ibm.cpp,v $
- *    Authors: Xin Huang and Han Zhou
+ *    Authors: Xin Huang, Han Zhou, and Shuyuan Yu
  *    Functions: First step of EM analysis for IBM-format
  *    power grid benchmarks
  *    $Date: 2020/03/17 $

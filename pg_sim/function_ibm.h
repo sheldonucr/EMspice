@@ -156,38 +156,4 @@ void GetCurDen(res_map &resmap, map<string, double> &node_vol);
 
 void EM_check(res_map &rmap, map<string,double> &vmap, vector<res_geo_vec> &vtree, map<int, treeInfo> &tImap);
 
-void UpdateRes(str_vec &rgrow, res_map &rmap, vector<res_geo_vec> &vtree, map<int,treeInfo> &tinfo, map<string, double> &smap, double tcur);
-
-void UpdateBackG(matrix* G, NodeList* nodePool, res_map rmap);
-
-void UpdateG(matrix* G, NodeList* nodePool, res_map rmap);
-
-////////////////////////////////////////////////
-
-bool CheckIRDrop(map<string, double> &node_vol, double &max_IR_drop,
-		string &minvol_nname, string &first_failure);
-
-///////////////////////////////////////////////
-
-void StressSolve(vector<res_geo_vec> &vtree, map<string, double> &smap,
-		res_map &rmap); 
-
-///////////////////////////////////////////////
-void CheckNucleation(res_map &rmap, vector<res_geo_vec> &vtree, str_vec &rgrow,
-		map<string, double> &smap, map<string, str_vec> &nmap, vector<map<
-				string, node_vec> > &nnmaps, double tcur, str_vec &void_nodes);
-
-double MinNucleationTime(res_map &rmap, vector<res_geo_vec> &vtree,
-		str_vec &rgrow, map<string, double> &smap, map<string, str_vec> &nmap,
-		vector<map<string, node_vec> > &nnmaps, string &min_tnuc_rname,
-		bool &isEMimmune, str_vec &void_nodes);
-
-
-///////////////////////////////
-void StresstoFile(map<string, double> &smap, const char* filename);
-
-void RgrowtoFile(str_vec &rgrow, res_map &rmap, str_vec &void_nodes, const char* filename);
-
-void IRdroptoFile(map<string, double> &node_vol, const char* filename);
-
-#endif /* FUNCTION_IBM_XH_H_ */
+#endif

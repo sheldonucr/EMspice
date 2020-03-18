@@ -108,12 +108,6 @@ int main(int argc, char* argv[]){
 	map<int, treeInfo> tree_info; // vdd trees, tree number, <tree volume, tree length>
 	vector<map<string, node_vec> > node_node_maps;
 
-    str_vec void_nodes;
-    const char* ini_stress_file = "./pg2_inistress.txt";
-    const char* final_stress_file = "./pg2_finalstress.txt";
-    const char* final_irdrop_file  = "./p2_finalIRdrop.txt";
-    const char* rgrow_file = "./w_rgrow_allnet.txt";
-
 	cout << "/****************************************/" << endl;
 	cout << "/*                                      */" << endl;
 	cout << "/*          STEP1: INITIALIZATION       */" << endl;
@@ -125,6 +119,7 @@ int main(int argc, char* argv[]){
 	nsubnode = 0;
 	parser_sub(cktname, tstep, tstop, nsubnode, nVS, nIS, nL, nodePool);
 	printf("get port information.\n");
+	
 	/* get port information */
 	nport = nodePool->numPort();
 	port.set_size(nport);
@@ -228,7 +223,6 @@ int main(int argc, char* argv[]){
 	//GetNodeNodeMap(trees, node_res_map, node_node_maps);
 
 	// 3. get initial node v and branch j
-
 	cout << "**** MNA solver starts ****" << endl;
 	mat sim_port_value;
 	char ir_name[100];
@@ -248,12 +242,4 @@ int main(int argc, char* argv[]){
 //SHyu
 	EM_check(resmap, node_vol, trees, tree_info);
 //SHyu end
-
-	// 4. solve stress, get tnuc, tstart = min(tnuc)
-	//printf("solve node stress...\n");
-	//StressSolve(trees, node_stress, resmap);
-
-    //print initial stress
-    //StresstoFile(node_stress, ini_stress_file);
-    
 }
