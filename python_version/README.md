@@ -1,8 +1,11 @@
-##EM_spice has 
+**EM_spice has **
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
-**PG_solver code in EMspice_python/pg_sim/"
+
+**PG_solver code in EMspice_python/pg_sim/"**
+
 **Coupled simulation code and framework in "EMspice_python/python_version/"**
+
 **GUI code in "EMspice_python/python_version/"**
 
 Here are details on how to run the code
