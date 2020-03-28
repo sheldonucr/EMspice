@@ -22,7 +22,7 @@ UMFPACK = /home/locker/EE/mscad/num_lib/umfpack/UMFPACK
 UFCONFIG = /home/locker/EE/mscad/num_lib/umfpack/UFconfig
 AMD = /home/locker/EE/mscad/num_lib/umfpack/AMD
 
-INCFLAGS = -static -I$(ITPP) -I$(UMFPACK)/Include -I$(UMFPACK)/Source -I$(UFCONFIG) \
+INCFLAGS = -I$(ITPP) -I$(UMFPACK)/Include -I$(UMFPACK)/Source -I$(UFCONFIG) \
 	-I$(CXSPARSE)/Include  -I$(AMD)/Include 
 
 LIBFLAGS = -L$(ITPP)/lib -L$(UMFPACK)/Lib -L$(AMD)/Lib -Wl,-rpath,$(ITPP)/lib
