@@ -1,4 +1,4 @@
-**EM_spice has **
+# EM_spice 
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
