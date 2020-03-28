@@ -1,8 +1,7 @@
 # This is the EM solver coupled with pg solver from pg_sim
 
-**Step 2. Coupled simulation using EM slover and PG solver**
  
-This step we do the coupled simulation with PG_solver and EM_solver
+This part we do the coupled simulation with PG_solver and EM_solver
 
 Use the spice file ({spicefilename}.sp)  and the constant for simulation in the file EM_spice_constant.txt 
 as the input for this step. EM_spice.py  is the EM solver and em_cmd is the binary code of PG solver. 
