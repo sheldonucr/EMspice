@@ -1,4 +1,4 @@
-**EM_spice has **
+##EM_spice has 
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 **PG_solver code in EMspice_python/pg_sim/"
