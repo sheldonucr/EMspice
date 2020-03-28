@@ -62,8 +62,12 @@ Concretely, put 'CORTEXM0DS_pads.VDD.pw_hl.pna', 'armcore.sp', 'u_Lvoid_xx.txt',
 
 ![alt tag](https://github.com/zergzerg/EMspice_workrepo/blob/master/EM_GUI/EM_GUI%20matplotlib%20version/readme3.jpg "no comment")
      
+## (optional) Run 'H-V comperator'
+This file eliminate some wrong branches in chiptop dataset. if you don't use chiptop, no need to do this.
+
 ## Step2: Run all parser files.
-Run six parser files one by one. Before executing each parser file, open the parser to make sure the input file name match the data file name which located in the '/data'.
+Run parser files one by one. Before executing each parser file, open the parser to make sure the input file name match the data file name which located in the '/data'.
+Only run one parser between parser3 and parser6. They use same storage.  
 
 ![alt tag](https://github.com/zergzerg/EMspice_workrepo/blob/master/EM_GUI/EM_GUI%20matplotlib%20version/readme1.jpg "Adjust the path of input data")
 
