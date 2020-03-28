@@ -1,12 +1,13 @@
-##EM_spice has 
-##ICC to spice code in "EMspice_python/icc2spice/"
-##PG_solver code in EMspice_python/pg_sim/"
-##Coupled simulation code and framework in "EMspice_python/python_version/"
-##GUI code in "EMspice_python/python_version/"
+**EM_spice has **
+
+**ICC to spice code in "EMspice_python/icc2spice/"**
+**PG_solver code in EMspice_python/pg_sim/"
+**Coupled simulation code and framework in "EMspice_python/python_version/"**
+**GUI code in "EMspice_python/python_version/"**
 
 Here are details on how to run the code
 
-##Step 1. Get the spice file from ICC result
+**Step 1. Get the spice file from ICC result**
 
 This step we convert the output from ICC to spice file which can be read by PG_solver
 
@@ -18,7 +19,7 @@ Output is .sp file
 
 Command is python syn2spice.py
 
-##Step 2. Coupled simulation using EM slover and PG solver
+**Step 2. Coupled simulation using EM slover and PG solver**
  
 This step we do the coupled simulation with PG_solver and EM_solver
 
@@ -34,7 +35,7 @@ u_stress.txt: stress on each segment tree_node_voltage.txt nodal voltage on all 
 
 Command is python EM_spice.py {spicefilename}.sp
 
-##Step 3 Display the information in GUI
+**Step 3 Display the information in GUI**
 
 This step display the simulation result from the GUI. 
 
