@@ -25,7 +25,8 @@ AMD = /home/locker/EE/mscad/num_lib/umfpack/AMD
 INCFLAGS = -I$(ITPP) -I$(UMFPACK)/Include -I$(UMFPACK)/Source -I$(UFCONFIG) \
 	-I$(CXSPARSE)/Include  -I$(AMD)/Include 
 
-LIBFLAGS = -L$(ITPP)/lib -L$(UMFPACK)/Lib -L$(AMD)/Lib 
+LIBFLAGS = -L$(ITPP)/lib -L$(UMFPACK)/Lib -L$(AMD)/Lib -Wl,-rpath,./ 
+#LIBFLAGS = -L$(ITPP)/lib -L$(UMFPACK)/Lib -L$(AMD)/Lib -Wl,-rpath,$(ITPP)/lib
 
 LIBDIR = /home/locker/EE/mscad/num_lib
 LIBS = $(LIBDIR)/libumfpack.a $(LIBDIR)/libamd.a $(LIBDIR)/libcxsparse.a 
@@ -52,6 +53,7 @@ DEBUGFLAGS = -g #-DNDEBUG -O3
 
 $(MAIN): $(OBJS) $(MAINOBJS) $(TMAINOBJS) $(LIBS) $(CU_OBJS)  
 	@echo "Link  em_cmd ...."
+	@echo $(CPP) $(INCFLAGS) $(LIBFLAGS) $(FLAGS_OPT) $(DEBUGFLAGS) $(THREADFLAGS) -o em_cmd $(OBJS) $(MAINOBJS) $(LIBS) $(LIBS_OPT) $(CU_OBJS) $(cuLIB)
 	@$(CPP) $(INCFLAGS) $(LIBFLAGS) $(FLAGS_OPT) $(DEBUGFLAGS) $(THREADFLAGS) -o em_cmd $(OBJS) $(MAINOBJS) $(LIBS) $(LIBS_OPT) $(CU_OBJS) $(cuLIB)
 
 .cpp.o:
