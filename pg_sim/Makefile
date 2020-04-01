@@ -16,7 +16,6 @@
 MAIN = pgsim_cmd
 
 ITPP = /home/locker/EE/mscad/num_lib/itpp-4.3.1
-CXSPARSE = /home/locker/EE/mscad/num_lib/CSparse
 CXSPARSE = /home/locker/EE/mscad/num_lib/CXSparse
 UMFPACK = /home/locker/EE/mscad/num_lib/umfpack/UMFPACK
 UFCONFIG = /home/locker/EE/mscad/num_lib/umfpack/UFconfig
