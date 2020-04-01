@@ -48,7 +48,7 @@ int main(int argc, char* argv[]){
   start = clock();
 
     if (argc == 1 || argc > 3){
-        cout << "usage: em_cmd circuit_name\n";
+        cout << "usage: pgsim_cmd circuit_name\n";
 		exit(-1);
 	}
   
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
 		ir_info = 1;
 		i++;
 	  }else{
-        cout << "usage: etbr_cmd circuit_name [-ir]\n";
+        cout << "usage: pgsim_cmd circuit_name \n";
 		exit(-1);
 	  }
 	}
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]){
 	double tcur = 0;
 	double max_stress;
 	double max_IRdrop;
-    string min_tnuc_rname;
+        string min_tnuc_rname;
 	bool isEMimmune = false;
 	double max_IR_drop;
 	string first_failure;

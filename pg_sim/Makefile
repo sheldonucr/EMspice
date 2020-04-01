@@ -1,6 +1,6 @@
 ###########################################################
 #
-#				 Power Grid Simulator 
+#		Fast Power Grid Simulator 
 # 		(Netlist Parser and Nodal Voltage Solver)
 #
 ###########################################################
@@ -13,7 +13,7 @@
 #
 ###########################################################
 
-MAIN = em_cmd
+MAIN = pgsim_cmd
 
 ITPP = /home/locker/EE/mscad/num_lib/itpp-4.3.1
 CXSPARSE = /home/locker/EE/mscad/num_lib/CSparse
