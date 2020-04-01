@@ -25,7 +25,8 @@ AMD = /home/locker/EE/mscad/num_lib/umfpack/AMD
 INCFLAGS = -I$(ITPP) -I$(UMFPACK)/Include -I$(UMFPACK)/Source -I$(UFCONFIG) \
 	-I$(CXSPARSE)/Include  -I$(AMD)/Include 
 
-LIBFLAGS = -L$(ITPP)/lib -L$(UMFPACK)/Lib -L$(AMD)/Lib -Wl,-rpath,$(ITPP)/lib
+LIBFLAGS = -L$(ITPP)/lib -L$(UMFPACK)/Lib -L$(AMD)/Lib -Wl,-rpath,./ 
+#LIBFLAGS = -L$(ITPP)/lib -L$(UMFPACK)/Lib -L$(AMD)/Lib -Wl,-rpath,$(ITPP)/lib
 
 LIBDIR = /home/locker/EE/mscad/num_lib
 LIBS = $(LIBDIR)/libumfpack.a $(LIBDIR)/libamd.a $(LIBDIR)/libcxsparse.a 
