@@ -4,7 +4,7 @@ Last update: April 2020
 
 EMspice performs the mult-physics electrical and stress analysis of multi-segment interconnect wires. The repot consists of phython version and matlab version impementation of EMspice. 
 
-EMspice was developed by Zeyu Sun at UC Riverside in 2020.
+EMspice was developed by Zeyu Sun, Han Zhou, Yibo Liu and Sheldon Tan at UC Riverside in 2020.
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
