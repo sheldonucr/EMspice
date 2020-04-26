@@ -1,12 +1,18 @@
-# This is the Python version of the EMSpice, which perform the mult-physics electrical and stress analysis of multi-segment interconnect wires.
+# EMspice -- The full-chip level EM-IR coupled analysis for EM sign-off analysis
+
+Last update: April 2020
+
+EMspice performs the mult-physics electrical and stress analysis of multi-segment interconnect wires. The repot consists of phython version and matlab version impementation of EMspice. 
+
+EMspice was developed by Zeyu Sun at UC Riverside in 2020.
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
 **PG_solver code in EMspice_python/pg_sim/"**
 
-**Coupled simulation code and framework in "EMspice_python/python_version/"**
+**Coupled simulation code and framework in "EMspice_python/emspice_python/"**
 
-**GUI code in "EMspice_python/python_version/"**
+**GUI code in "EMspice_python/em_gui/"**
 
 Here are details on how to run the code
 
