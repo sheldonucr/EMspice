@@ -1,7 +1,6 @@
 # EMspice -- The full-chip level EM-IR coupled analysis for EM sign-off analysis
-EMspice which perform the mult-physics electrical and stress analysis of multi-segment interconnect wires.
 
-We have phython version and matlab version
+EMspice performs the mult-physics electrical and stress analysis of multi-segment interconnect wires. The repot consists of phython version and matlab version impementation of EMspice. 
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
