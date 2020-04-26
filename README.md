@@ -1,4 +1,4 @@
-# EMspice -- Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM check and Sign-off
+# EMspice -- Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM Check and Sign-off
 
 Last update: April 2020
 
