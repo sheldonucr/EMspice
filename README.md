@@ -6,9 +6,9 @@ EMspice performs the mult-physics electrical and stress analysis of multi-segmen
 
 **PG_solver code in EMspice_python/pg_sim/"**
 
-**Coupled simulation code and framework in "EMspice_python/python_version/"**
+**Coupled simulation code and framework in "EMspice_python/emspice_python/"**
 
-**GUI code in "EMspice_python/python_version/"**
+**GUI code in "EMspice_python/em_gui/"**
 
 Here are details on how to run the code
 
