@@ -1,4 +1,4 @@
-# EMspice -- Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM Check and Sign-off
+# EMspice -- Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM and IR Check and Sign-off
 
 Last update: April 2020
 
@@ -28,7 +28,7 @@ Output is {spicefilename}.sp file
 
 Command is python syn2spice.py
 
-## Step 2. Coupled simulation using EM slover and PG solver**
+## Step 2. Coupled simulation using EM solver and PG solver for EM and IR drop checks**
  
 This step we do the coupled simulation with PG_solver and EM_solver
 
