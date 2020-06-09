@@ -18,7 +18,7 @@ Sheldon X.-D. Tan, Mehdi Tahoori, Taeyoung Kim, Shengcheng Wang, Zeyu Sun and Sa
 
 This project was funded by National Science Fundation (CCF-1816361 and CCF-1527324). See details at https://intra.ece.ucr.edu/~stan/project/vsclab_wiki_new/index.php/VLSI_reliability,_resilience,_fault-tolerant_computing_and_dynamic_reliability_management
 
-## The major components of the codes
+## The major components of the program
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
