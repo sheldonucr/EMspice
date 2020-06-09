@@ -8,8 +8,17 @@ EMspice v1.0 is released under the terms of BSD 3-Clause License (see LICENSE fo
 
 ## References 
 
+C. Cook, Z. Sun, E. Demircan, M. Shroff,  S. X-.D. Tan, “Fast electromigration stress evolution analysis for interconnect trees using Krylov subspace method”, IEEE Transactions on Very Large Scale Integrated Systems  (TVLSI),  Vol. 26, no. 5, pp. 969-980, May 2018.
+
+Z. Sun, S. Sadiqbatcha, H. Zhao, and S. X.-D. Tan, “Saturation volume estimation for  multi-segment copper interconnect wire”, IEEE Transactions on Very Large Scale Integrated Systems  (TVLSI), vol. 27, no. 7, pp.1063-8210, July, 2019, DOI: https://doi.org/10.1109/TVLSI.2019.2901824
+
 Z. Sun, S. Yu, H. Zhou, Y. Liu and S. X.-D. Tan, “EMSpice: physics-based electromigration check using coupled electronic and stress simulation”, IEEE Transaction on Device and Materials  Reliability (T-DMR), Mach 2020. 10.1109/TDMR.2020.2981628
 
+Sheldon X.-D. Tan, Mehdi Tahoori, Taeyoung Kim, Shengcheng Wang, Zeyu Sun and Saman Kiamehr, “VLSI Systems Long-Term Reliability -- Modeling, Simulation and Optimization”,  Springer Publisher, 2019. DOI: 10.1007/978-3-030-26172-6, ISBN: 978-3-030-26171-9 (https://www.springer.com/gp/book/9783030261719). 
+
+This project was funded by National Science Fundation (CCF-1816361 and CCF-1527324). See details at https://intra.ece.ucr.edu/~stan/project/vsclab_wiki_new/index.php/VLSI_reliability,_resilience,_fault-tolerant_computing_and_dynamic_reliability_management
+
+## The major components of the codes
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
