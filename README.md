@@ -1,12 +1,16 @@
-# EMspice v1.0 -- Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM and IR Check and Sign-off
+# EMspice v1.0 
 
-Last update: April 2020
+Last update: June 2020
+
+* EMspice is a Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM and IR Check and Sign-off. It has been developed by Prof. Sheldon Tan and Dr. Zeyu Sun at UC Riverside. 
+
 
 EMspice performs the mult-physics electrical and stress analysis of multi-segment interconnect wires. The repot consists of phython version and matlab version impementation of EMspice. 
 
 EMspice was developed by Zeyu Sun, Han Zhou, Yibo Liu and Sheldon Tan at UC Riverside in 2020.
 
 EMspice v1.0 is released under the terms of BSD 3-Clause License (see LICENSE for details). 
+
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
@@ -18,7 +22,7 @@ EMspice v1.0 is released under the terms of BSD 3-Clause License (see LICENSE fo
 
 Here are details on how to run the code
 
-## Step 1. Get the spice file from ICC result**
+## Step 1. Get the spice file from ICC result
 
 This step we convert the output from ICC to spice file which can be read by PG_solver
 
@@ -30,7 +34,7 @@ Output is {spicefilename}.sp file
 
 Command is python syn2spice.py
 
-## Step 2. Coupled simulation using EM solver and PG solver for EM and IR drop checks**
+## Step 2. Coupled simulation using EM solver and PG solver for EM and IR drop checks
  
 This step we do the coupled simulation with PG_solver and EM_solver
 
@@ -46,7 +50,7 @@ u_stress.txt: stress on each segment tree_node_voltage.txt nodal voltage on all 
 
 Command is python EM_spice.py {spicefilename}.sp
 
-## Step 3 Display the information in GUI**
+## Step 3 Display the information in GUI
 
 This step display the simulation result from the GUI. 
 
