@@ -1,10 +1,12 @@
-# EMspice -- Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM and IR Check and Sign-off
+# EMspice v1.0 -- Coupled EM-IR Analysis Tool for Full-Chip Power Grid EM and IR Check and Sign-off
 
 Last update: April 2020
 
 EMspice performs the mult-physics electrical and stress analysis of multi-segment interconnect wires. The repot consists of phython version and matlab version impementation of EMspice. 
 
 EMspice was developed by Zeyu Sun, Han Zhou, Yibo Liu and Sheldon Tan at UC Riverside in 2020.
+
+EMspice v1.0 is released under the terms of BSD 3-Clause License (see LICENSE for details). 
 
 **ICC to spice code in "EMspice_python/icc2spice/"**
 
