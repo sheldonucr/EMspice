@@ -26,5 +26,5 @@ Output:
 	run34x32.py		run64x64.py
 
 **Commands to run the source code: 
-	python run34x42.py
+	python run34x32.py
 
